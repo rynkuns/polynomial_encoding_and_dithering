@@ -1,0 +1,260 @@
+<!-- 
+<!DOCTYPE html>
+<html>
+<head>
+
+    <script type="text/javascript">window.languagePluginUrl = 'https://pyodide-cdn2.iodide.io/v0.15.0/full/';</script>
+    <script src="https://pyodide-cdn2.iodide.io/v0.15.0/full/pyodide.js"></script>
+
+</head>
+<body>
+    <input type="file" onchange="doit();" id="file">
+    <script type="text/javascript">
+    var content = null;
+
+    function doit() {
+        // https://github.com/pyodide/pyodide/issues/679
+        var file = document.getElementById("file").files[0];
+        var reader = new FileReader();
+        reader.readAsBinaryString(file);
+        reader.onload = evt => { 
+            content = evt.target.result; 
+            var output = pyodide.runPython('from js import content\ncontent');
+            var l = output.length;
+            var array = new Uint8Array(l);
+            for (var i = 0; i < l; i++) {
+                array[i] = output.charCodeAt(i);
+            }
+            var blob = new Blob([array], {type: 'application/octet-stream'});
+            var elem = window.document.createElement('a');
+            elem.href = window.URL.createObjectURL(blob);
+            elem.download = 'output.pdf';
+            document.body.appendChild(elem);
+            elem.click();        
+            document.body.removeChild(elem);
+        }
+    }
+
+    languagePluginLoader.then(function () {
+        console.log('Ready');
+    });
+    </script>
+</body>
+ -->
+
+
+
+
+
+<!doctype html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+  </head>
+
+  <body>
+    <p>
+      You can execute any Python code. Just enter something in the box below and
+      click the button.
+    </p>
+    <input id="code" />
+    <button onclick="evaluatePython()">Run</button>
+    <br>
+    <input type="file" onchange="readImageFile(this);" id="file">
+    <br>
+    <button onclick="startDithering()">Start dithering!</button>
+    <br />
+    <br />
+    <div>Output:</div>
+    <textarea id="output" style="width: 100%;" rows="6" disabled></textarea>
+    <br><br>
+    <img id="uploaded_image"/>
+    <br><br>
+    <img id="final_image"/>
+
+
+
+
+
+
+
+    <!-- SCRIPTS -->
+
+    <script>
+      const output = document.getElementById("output");
+      const code = document.getElementById("code");
+
+
+      function addToOutput(s) {
+        output.value += s + "\n";
+      }
+
+
+      output.value = "Initializing Pyodide...\n";
+      async function main() {
+        let pyodide = await loadPyodide();
+
+        addToOutput("Loading packages...")
+        await pyodide.loadPackage("pillow")
+        await pyodide.loadPackage("numpy")
+        await pyodide.loadPackage("scikit-learn")
+
+        pyodide.runPython(`
+          from PIL import Image
+          import numpy as np
+          from sklearn.cluster import KMeans
+
+          from io import BytesIO
+          import base64
+        `)
+        addToOutput("All complete. Ready!")
+        return pyodide;
+      }
+      let pyodideReadyPromise = main();
+
+
+      async function evaluatePython() {
+        let pyodide = await pyodideReadyPromise;
+        try {
+          let output = pyodide.runPython(code.value);
+          addToOutput(output);
+        } catch (err) {
+          addToOutput(err);
+        }
+      }
+
+
+      var image_file = null;
+      async function readImageFile(input) {
+        let pyodide = await pyodideReadyPromise; 
+
+        let file = input.files[0]; 
+        let fileReader = new FileReader(); 
+        // fileReader.readAsArrayBuffer(file);
+        fileReader.readAsBinaryString(file);
+        // readAsArrayBuffer
+
+        fileReader.onload = function() {
+          image_file = fileReader.result;
+          let xxx = pyodide.runPython(`
+            from js import image_file
+            obraz = Image.open(BytesIO(bytes(ord(c) for c in image_file))).convert("RGB") ### key moment here
+            obraz
+          `)  
+          // addToOutput(xxx);
+
+          uploaded_img_str = pyodide.runPython(`
+            image_buf = BytesIO()
+            obraz.save(image_buf, format='png')
+            image_buf.seek(0)
+            uploaded_img_str = 'data:image/png;base64,' + base64.b64encode(image_buf.read()).decode('UTF-8')
+            uploaded_img_str
+          `);
+          document.getElementById("uploaded_image").src=uploaded_img_str
+
+        }; 
+        fileReader.onerror = function() {
+          alert(fileReader.error);
+        }; 
+      }
+      
+
+      async function startDithering() {
+        let pyodide = await pyodideReadyPromise;
+
+        pyodide.runPython(`
+
+          czy_FSteinberg = True ######### DAĆ TU OPCJE Z JSa
+          l_klast = 5 ######### TO SAMO !
+          cluster_n_init = 1 ######### TO SAMO !
+
+          pixele = []
+          for y in range(obraz.size[1]):
+              for x in range(obraz.size[0]):
+                  pixele.append(obraz.getpixel((x,y)))        
+          klastry = KMeans(n_clusters=l_klast, random_state=0, n_init=cluster_n_init).fit(pixele)
+
+          indeks = klastry.labels_ #lista, do któego klastra należy dany pixel
+          kolor = klastry.cluster_centers_.astype(int) #wybrane przezalgorytm kolory
+          mapa = obraz.load()
+
+          if czy_FSteinberg:
+              def korektor(pierwotny, korekta, waga):
+                  """Funkcja przyjmuje wartość pierwotną pixela, oraz wyliczoną wartość błędu z poprzedniego pixela,
+                    a następnie aplikuje ją z odpowiednią wagą i zwraca."""
+                  nowy = []
+                  for i in range(3):
+                      nowy.append(int(pierwotny[i] + korekta[i]*waga))
+                  return tuple(nowy)
+                  
+
+              for y in range(obraz.size[1]-1):       #faktyczny proces cieniowa algorytmem
+                  for x in range(1,obraz.size[0]-2):
+                      oryginalny = obraz.getpixel((x,y))
+                      nowy = kolor[klastry.predict(np.array(oryginalny).reshape(1, -1))][0]
+                      mapa[x,y] = tuple(nowy)
+                      buond = np.array([oryginalny[0] - nowy[0], oryginalny[1] - nowy[1], oryginalny[2] - nowy[2]]) #błąd przybliżenia (w skali RGB)
+                      mapa[x+1,y] = korektor(obraz.getpixel((x+1,y)), buond, 7/16)
+                      mapa[x-1,y+1] = korektor(obraz.getpixel((x-1,y+1)), buond, 3/16)
+                      mapa[x,y+1] = korektor(obraz.getpixel((x,y+1)), buond, 5/16)
+                      mapa[x+1,y+1] = korektor(obraz.getpixel((x+1,y+1)), buond, 1/16)
+                      #powyżej dodawanie wartości błędu do sąsiadujących pixeli (zgodnie z algorytmem)
+                      
+          else: #redukcja l. kolorów bez cieniowania
+              n = 0
+              for y in range(obraz.size[1]):
+                  for x in range(obraz.size[0]):
+                      mapa[x,y] = tuple(kolor[indeks[n]])
+                      n+=1
+        `)
+
+        addToOutput("Dithering complete!");
+        // https://stackoverflow.com/questions/56583696/how-to-redirect-render-pyodide-output-in-browser
+        final_img_str = pyodide.runPython(`
+          image_buf = BytesIO()
+          obraz.save(image_buf, format='png')
+          image_buf.seek(0)
+          final_img_str = 'data:image/png;base64,' + base64.b64encode(image_buf.read()).decode('UTF-8')
+          final_img_str
+        `)
+        document.getElementById("final_image").src=final_img_str
+      }
+
+
+
+
+
+
+
+
+
+/*       var content = null;
+
+      async function doit() {
+        let pyodide = await pyodideReadyPromise;
+        // https://github.com/pyodide/pyodide/issues/679
+        var file = document.getElementById("file").files[0];
+        var reader = new FileReader();
+        reader.readAsBinaryString(file);
+        reader.onload = evt => { 
+            content = evt.target.result; 
+            var output = pyodide.runPython('from js import content\ncontent');
+            var l = output.length;
+            var array = new Uint8Array(l);
+            for (var i = 0; i < l; i++) {
+                array[i] = output.charCodeAt(i);
+            }
+            var blob = new Blob([array], {type: 'application/octet-stream'});
+            var elem = window.document.createElement('a');
+            elem.href = window.URL.createObjectURL(blob);
+            elem.download = 'output.pdf';
+            document.body.appendChild(elem);
+            elem.click();        
+            document.body.removeChild(elem);
+        }
+    } */
+
+
+    </script>
+  </body>
+</html>
