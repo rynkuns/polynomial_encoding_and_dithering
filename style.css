@@ -1,0 +1,211 @@
+
+:root {
+    --footer-height: 110px;
+}
+
+
+body {
+    background-color: rgb(27, 25, 27);
+    color: gray;
+    margin-bottom: var(--footer-height);
+}
+
+a {
+    color: slategray;
+    text-decoration: none;
+}
+
+.console {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -10;
+    font-size: xx-large;
+    color: rgb(51, 54, 53);
+    font-family: 'Courier New', monospace;
+    background-color: transparent;
+    border-style: none;
+
+    -webkit-animation: console-color-anim 4s infinite;
+    -moz-animation: console-color-anim 4s infinite;
+    -o-animation: console-color-anim 4s infinite;
+    -ms-animation: console-color-anim 4s infinite;
+    animation: console-color-anim 4s infinite;
+}
+
+@-webkit-keyframes console-color-anim {
+    0% { color: rgb(51, 54, 53); }
+    50% { color: rgb(29, 31, 30); }
+    80% { color: rgb(69, 71, 71); }
+    100% { color: rgb(48, 52, 53); }
+}
+@-moz-keyframes console-color-anim {
+    0% { color: rgb(51, 54, 53); }
+    50% { color: rgb(29, 31, 30); }
+    80% { color: rgb(69, 71, 71); }
+    100% { color: rgb(48, 52, 53); }
+}
+@-ms-keyframes console-color-anim {
+    0% { color: rgb(51, 54, 53); }
+    50% { color: rgb(29, 31, 30); }
+    80% { color: rgb(69, 71, 71); }
+    100% { color: rgb(48, 52, 53); }
+}
+@-o-keyframes console-color-anim {
+    0% { color: rgb(51, 54, 53); }
+    50% { color: rgb(29, 31, 30); }
+    80% { color: rgb(69, 71, 71); }
+    100% { color: rgb(48, 52, 53); }
+}
+@keyframes console-color-anim {
+    0% { color: rgb(51, 54, 53); }
+    50% { color: rgb(29, 31, 30); }
+    80% { color: rgb(69, 71, 71); }
+    100% { color: rgb(48, 52, 53); }
+}
+
+.left-side{
+    text-align: right;
+}
+
+.title-container {
+    color: lightgrey;
+    padding: 12px;
+    padding-right: 0;
+}
+
+.title-name {
+    font-size: 2em;
+    
+}
+
+.site-desc {
+    text-align: justify;
+    margin: 10;
+    margin-right: 0;
+    padding: 7px;
+    padding-right: 0;
+}
+
+.parameters {
+    color: lightgray;
+    margin: 10px;
+    margin-right: 0;
+    padding: 7px;
+    padding-right: 0;
+    border-top: 1px dotted lightgray ;
+}
+
+.slider-value {
+    color: white;
+    font-size: 1.5em;
+    text-shadow: 2px 2px rgb(97, 42, 85);
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1em;
+    height: 1em;
+    border-radius: 10%;
+    background: rgb(97, 42, 85);
+    cursor: pointer;
+    border: 2px solid slategray;
+    box-shadow: -407px 0 0 400px slategrey;
+}
+
+button {
+    font-size: 1.2em;
+    color: lightgray;
+    font-weight: 500;
+    padding: 10px 15px 10px;
+    outline: 0;
+    border: 2px solid rgb(97, 42, 85);
+    cursor: pointer;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+  
+  button:after {
+    content: "";
+    background-color: darkslategray;
+    width: 100%;
+    z-index: -1;
+    position: absolute;
+    height: 100%;
+    top: 5px;
+    right: 8px;
+    transition: 0.2s;
+}
+  
+  button:hover:after {
+    top: 0px;
+    right: 0px;
+}
+
+input[type="file"] {
+    
+}
+
+.image-container {
+    border-style: solid;
+    border-width: 2px;
+    border-color: black;
+    
+    width: 100%;
+    height: 40%;
+    margin-top: 10px;
+
+    background-size: contain;
+    background-color: black;
+    background-image: none;
+}
+
+.image-container img {
+    object-fit: contain;
+    height: 100%;
+
+    position: relative; 
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.image-label {
+    transform-origin: 0 0;
+    transform: rotate(90deg);
+    
+    position: relative;
+    left: 106%;
+    top: 0px;
+    height: 0;
+
+    font-size: 1.15em;
+    font-weight: bold;
+    text-shadow: 2px 2px rgb(97, 42, 85);
+}
+
+.footer {
+
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: var(--footer-height);
+    line-height: var(--footer-height); /* Vertical center */
+
+    background: rgb(6,0,22);
+    /* background: linear-gradient(0deg, rgba(6,0,22,1) 10%, rgba(57, 61, 60, 0.61) 50%, rgba(255,255,255,0) 100%); https://cssgradient.io/ */
+
+    font-size: 2em;
+    color: lightgray;
+}
+
+.footer .container {
+    width: 500px;
+}
+
+
+

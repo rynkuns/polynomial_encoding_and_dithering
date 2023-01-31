@@ -49,31 +49,101 @@
 <!doctype html>
 <html>
   <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Floyd–Steinberg dithering online</title>
+
     <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
-    <p>
-      You can execute any Python code. Just enter something in the box below and
-      click the button.
-    </p>
-    <input id="code" />
-    <button onclick="evaluatePython()">Run</button>
-    <br>
-    <input type="file" onchange="readImageFile(this);" id="file">
-    <br>
-    <button onclick="startDithering()">Start dithering!</button>
-    <br />
-    <br />
-    <div>Output:</div>
-    <textarea id="output" style="width: 100%;" rows="6" disabled></textarea>
-    <br><br>
-    <img id="uploaded_image"/>
-    <br><br>
-    <img id="final_image"/>
+
+    <textarea id="output" class="console" disabled></textarea>
+
+    <div class="container">
+      <div class="row">
+
+        <div class="col left-side">
+          <div class="title-container">
+            <span class="title-name">Floyd–Steinberg dithering online</span> <br>
+            made by <a href="https://github.com/rynkuns">rynkuns <span class="bi bi-github"></span></a>
+          </div>
+          <div class="site-desc">
+            <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.</p>
+          </div>
+          <div>
+            <div class="parameters">
+              <input type="file" onchange="readImageFile(this);" id="file">
+            </div>
+            <div class="parameters">
+              <label for="range-n-clusters">No. of colours to split image into</label><br>
+              <span id="valueNClusters" class="slider-value">5</span>
+              <input type="range" min="2" max="20" value="5" id="range-n-clusters" step="1" class="slider" oninput="valueNClusters.innerText = this.value">
+            </div>
+            <div class="parameters">
+              <label for="range-n-init">No. of times the image will be clustered<br>
+                <i class="bi bi-exclamation-triangle"></i> <span style="font-size: 80%;">Higher values may bring better results on the cost of processing time.</span></label><br>
+              <span id="valueNInit" class="slider-value">1</span>
+              <input type="range" min="1" max="7" value="1" id="range-n-init" step="1" class="slider" oninput="valueNInit.innerText = this.value">
+            </div>
+            <div class="parameters">
+              <button onclick="startDithering()">start</button>
+            </div>
+          </div>
+          <div>
+            <br>Please note that this is a static site and all calculations happen on your device.<br>None of your data is stored online.
+          </div>
+        </div>
+
+        <div class="col-md">
+          <div id="image-one" class="image-container">
+            <div class="image-label">the original image</div>
+            <img id="uploaded_image" src="empty.png"/>
+          </div>
+          <div id="image-two" class="image-container">
+            <div class="image-label">without dithering</div>
+            <img id="mid_image" src="empty.png"/>
+          </div>
+          <div id="image-three" class="image-container">
+            <div class="image-label">with dithering</div>
+            <img id="final_image" src="empty.png"/>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+    <footer class="footer">
+      <div class="container">
+          <div class="row">
+            <div class="col"><a href="#projects-container"><span class="bi bi-journal-code"></span></a></div> 
+            <div class="col"><a href="#"><span class="bi bi-journal-text"></span></a></div> 
+            <div class="col"><span class="bi bi-slash"></span></div> 
+            <div class="col"><a href="mailto:szymon.rynkun+homepage@gmail.com"><span class="bi bi-envelope"></span></a></div>
+            <div class="col"><a href="https://www.linkedin.com/in/szymon-rynkun/"><span class="bi bi-linkedin"></span></a></div>
+            <div class="col"><a href="https://github.com/rynkuns"><span class="bi bi-github"></span></a></div>
+          </div> <!-- Bootstrap icons -->
+      </div>
+  </footer>
 
 
 
@@ -85,12 +155,15 @@
       const code = document.getElementById("code");
 
 
+
       function addToOutput(s) {
         output.value += s + "\n";
       }
 
 
-      output.value = "Initializing Pyodide...\n";
+
+
+      output.value = "Initializing Python...\n";
       async function main() {
         let pyodide = await loadPyodide();
 
@@ -113,6 +186,8 @@
       let pyodideReadyPromise = main();
 
 
+      
+
       async function evaluatePython() {
         let pyodide = await pyodideReadyPromise;
         try {
@@ -122,6 +197,7 @@
           addToOutput(err);
         }
       }
+
 
 
       var image_file = null;
@@ -142,6 +218,7 @@
             obraz
           `)  
           // addToOutput(xxx);
+          addToOutput("Image loaded.");
 
           uploaded_img_str = pyodide.runPython(`
             image_buf = BytesIO()
@@ -157,11 +234,14 @@
           alert(fileReader.error);
         }; 
       }
+
+
       
 
       async function startDithering() {
         let pyodide = await pyodideReadyPromise;
 
+        addToOutput("Clustering and dithering in progress...");
         pyodide.runPython(`
 
           czy_FSteinberg = True ######### DAĆ TU OPCJE Z JSa
@@ -200,7 +280,7 @@
                       mapa[x+1,y+1] = korektor(obraz.getpixel((x+1,y+1)), buond, 1/16)
                       #powyżej dodawanie wartości błędu do sąsiadujących pixeli (zgodnie z algorytmem)
                       
-          else: #redukcja l. kolorów bez cieniowania
+          else: #no dithering
               n = 0
               for y in range(obraz.size[1]):
                   for x in range(obraz.size[0]):
@@ -256,5 +336,8 @@
 
 
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" crossorigin="anonymous"></script>
+
   </body>
 </html>
