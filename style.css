@@ -1,6 +1,6 @@
 
 :root {
-    --footer-height: 110px;
+    --footer-height: 80px;
 }
 
 
@@ -13,6 +13,11 @@ body {
 a {
     color: slategray;
     text-decoration: none;
+}
+
+a:hover {
+    color: whitesmoke;
+    transition: 0.11s;
 }
 
 .console {
@@ -37,31 +42,31 @@ a {
 
 @-webkit-keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
-    50% { color: rgb(29, 31, 30); }
+    50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
     100% { color: rgb(48, 52, 53); }
 }
 @-moz-keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
-    50% { color: rgb(29, 31, 30); }
+    50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
     100% { color: rgb(48, 52, 53); }
 }
 @-ms-keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
-    50% { color: rgb(29, 31, 30); }
+    50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
     100% { color: rgb(48, 52, 53); }
 }
 @-o-keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
-    50% { color: rgb(29, 31, 30); }
+    50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
     100% { color: rgb(48, 52, 53); }
 }
 @keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
-    50% { color: rgb(29, 31, 30); }
+    50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
     100% { color: rgb(48, 52, 53); }
 }
@@ -155,9 +160,10 @@ input[type="file"] {
     border-style: solid;
     border-width: 2px;
     border-color: black;
+    box-shadow: 1px 1px rgb(97, 42, 85);;
     
     width: 100%;
-    height: 40%;
+    height: 250px;
     margin-top: 10px;
 
     background-size: contain;

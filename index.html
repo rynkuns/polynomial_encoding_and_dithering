@@ -74,11 +74,18 @@
             made by <a href="https://github.com/rynkuns">rynkuns <span class="bi bi-github"></span></a>
           </div>
           <div class="site-desc">
-            <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.</p>
+            <p>Dithering is a process of minimizing quantization error,
+              eg. a difference between pixels values from original range (top image) and their values from a limited range (middle image),
+              by using calculated noise. Thanks to this process, when using only limited amout of values it is possible to retain details and large-scale patterns.
+              Although the middle and bottom images will use the same amout of distinc colours, their percieved fidelity is much different.
+            </p>
           </div>
           <div>
             <div class="parameters">
-              <input type="file" onchange="readImageFile(this);" id="file">
+              <input type="file" onchange="readImageFile(this);" id="file"><br>
+              <i class="bi bi-exclamation-triangle"></i> <span style="font-size: 75%;">
+                Bigger images may result in long processing time. Please be patient in case the page freezes.
+              </span>
             </div>
             <div class="parameters">
               <label for="range-n-clusters">No. of colours to split image into</label><br>
@@ -87,7 +94,9 @@
             </div>
             <div class="parameters">
               <label for="range-n-init">No. of times the image will be clustered<br>
-                <i class="bi bi-exclamation-triangle"></i> <span style="font-size: 80%;">Higher values may bring better results on the cost of processing time.</span></label><br>
+                <i class="bi bi-exclamation-triangle"></i> <span style="font-size: 75%;">
+                  Higher values may bring better results but with increase of processing time.
+                </span></label><br>
               <span id="valueNInit" class="slider-value">1</span>
               <input type="range" min="1" max="7" value="1" id="range-n-init" step="1" class="slider" oninput="valueNInit.innerText = this.value">
             </div>
@@ -96,7 +105,7 @@
             </div>
           </div>
           <div>
-            <br>Please note that this is a static site and all calculations happen on your device.<br>None of your data is stored online.
+            <br>Please note that this is a static site and all calculations happen on your device.<br>None of your data is stored by the author.
           </div>
         </div>
 
@@ -152,7 +161,6 @@
 
     <script>
       const output = document.getElementById("output");
-      const code = document.getElementById("code");
 
 
 
@@ -186,17 +194,6 @@
       let pyodideReadyPromise = main();
 
 
-      
-
-      async function evaluatePython() {
-        let pyodide = await pyodideReadyPromise;
-        try {
-          let output = pyodide.runPython(code.value);
-          addToOutput(output);
-        } catch (err) {
-          addToOutput(err);
-        }
-      }
 
 
 
@@ -206,19 +203,18 @@
 
         let file = input.files[0]; 
         let fileReader = new FileReader(); 
-        // fileReader.readAsArrayBuffer(file);
         fileReader.readAsBinaryString(file);
         // readAsArrayBuffer
 
         fileReader.onload = function() {
           image_file = fileReader.result;
-          let xxx = pyodide.runPython(`
+          let image_dims = pyodide.runPython(`
             from js import image_file
             obraz = Image.open(BytesIO(bytes(ord(c) for c in image_file))).convert("RGB") ### key moment here
-            obraz
+            obraz.size
           `)  
-          // addToOutput(xxx);
-          addToOutput("Image loaded.");
+          
+          addToOutput("Image " + image_dims + " loaded.");
 
           uploaded_img_str = pyodide.runPython(`
             image_buf = BytesIO()
@@ -241,12 +237,16 @@
       async function startDithering() {
         let pyodide = await pyodideReadyPromise;
 
-        addToOutput("Clustering and dithering in progress...");
-        pyodide.runPython(`
+        addToOutput("Clustering in progress...");
 
-          czy_FSteinberg = True ######### DAĆ TU OPCJE Z JSa
-          l_klast = 5 ######### TO SAMO !
-          cluster_n_init = 1 ######### TO SAMO !
+        n_init_value = document.getElementById("range-n-init").value
+        n_clusters_value = document.getElementById("range-n-clusters").value
+
+        pyodide.runPython(`
+          from js import n_init_value, n_clusters_value
+
+          l_klast = int(n_clusters_value)
+          cluster_n_init = int(n_init_value)
 
           pixele = []
           for y in range(obraz.size[1]):
@@ -256,39 +256,66 @@
 
           indeks = klastry.labels_ #lista, do któego klastra należy dany pixel
           kolor = klastry.cluster_centers_.astype(int) #wybrane przezalgorytm kolory
+          
+
+
+          from copy import deepcopy
+
+          obraz_mid = deepcopy(obraz)
+          mapa_mid = obraz_mid.load()
           mapa = obraz.load()
 
-          if czy_FSteinberg:
-              def korektor(pierwotny, korekta, waga):
-                  """Funkcja przyjmuje wartość pierwotną pixela, oraz wyliczoną wartość błędu z poprzedniego pixela,
-                    a następnie aplikuje ją z odpowiednią wagą i zwraca."""
-                  nowy = []
-                  for i in range(3):
-                      nowy.append(int(pierwotny[i] + korekta[i]*waga))
-                  return tuple(nowy)
-                  
 
-              for y in range(obraz.size[1]-1):       #faktyczny proces cieniowa algorytmem
-                  for x in range(1,obraz.size[0]-2):
-                      oryginalny = obraz.getpixel((x,y))
-                      nowy = kolor[klastry.predict(np.array(oryginalny).reshape(1, -1))][0]
-                      mapa[x,y] = tuple(nowy)
-                      buond = np.array([oryginalny[0] - nowy[0], oryginalny[1] - nowy[1], oryginalny[2] - nowy[2]]) #błąd przybliżenia (w skali RGB)
-                      mapa[x+1,y] = korektor(obraz.getpixel((x+1,y)), buond, 7/16)
-                      mapa[x-1,y+1] = korektor(obraz.getpixel((x-1,y+1)), buond, 3/16)
-                      mapa[x,y+1] = korektor(obraz.getpixel((x,y+1)), buond, 5/16)
-                      mapa[x+1,y+1] = korektor(obraz.getpixel((x+1,y+1)), buond, 1/16)
-                      #powyżej dodawanie wartości błędu do sąsiadujących pixeli (zgodnie z algorytmem)
+          n = 0
+          for y in range(obraz_mid.size[1]):
+              for x in range(obraz_mid.size[0]):
+                  mapa_mid[x,y] = tuple(kolor[indeks[n]])
+                  n+=1
+                  
+        `)
+        
+        addToOutput("Clustering complete.");
+        // https://stackoverflow.com/questions/56583696/how-to-redirect-render-pyodide-output-in-browser
+        mid_img_str = pyodide.runPython(`
+          mid_image_buf = BytesIO()
+          obraz_mid.save(mid_image_buf, format='png')
+          mid_image_buf.seek(0)
+          mid_img_str = 'data:image/png;base64,' + base64.b64encode(mid_image_buf.read()).decode('UTF-8')
+          mid_img_str
+        `)
+        document.getElementById("mid_image").src=mid_img_str
+
+
+
+      addToOutput("Dithering in progress...");
+      pyodide.runPython(`
+
+          def korektor(pierwotny, korekta, waga):
+              """Funkcja przyjmuje wartość pierwotną pixela, oraz wyliczoną wartość błędu z poprzedniego pixela,
+                a następnie aplikuje ją z odpowiednią wagą i zwraca."""
+              nowy = []
+              for i in range(3):
+                  nowy.append(int(pierwotny[i] + korekta[i]*waga))
+              return tuple(nowy)
+              
+
+          #faktyczny proces cieniowa algorytmem
+          for y in range(obraz.size[1]-1):
+              for x in range(1,obraz.size[0]-2):
+                  oryginalny = obraz.getpixel((x,y))
+                  nowy = kolor[klastry.predict(np.array(oryginalny).reshape(1, -1))][0]
+                  mapa[x,y] = tuple(nowy)
+                  buond = np.array([oryginalny[0] - nowy[0], oryginalny[1] - nowy[1], oryginalny[2] - nowy[2]]) #błąd przybliżenia (w skali RGB)
+                  mapa[x+1,y] = korektor(obraz.getpixel((x+1,y)), buond, 7/16)
+                  mapa[x-1,y+1] = korektor(obraz.getpixel((x-1,y+1)), buond, 3/16)
+                  mapa[x,y+1] = korektor(obraz.getpixel((x,y+1)), buond, 5/16)
+                  mapa[x+1,y+1] = korektor(obraz.getpixel((x+1,y+1)), buond, 1/16)
+                  #powyżej dodawanie wartości błędu do sąsiadujących pixeli (zgodnie z algorytmem)
                       
-          else: #no dithering
-              n = 0
-              for y in range(obraz.size[1]):
-                  for x in range(obraz.size[0]):
-                      mapa[x,y] = tuple(kolor[indeks[n]])
-                      n+=1
+
         `)
 
-        addToOutput("Dithering complete!");
+        addToOutput("Dithering complete.");
         // https://stackoverflow.com/questions/56583696/how-to-redirect-render-pyodide-output-in-browser
         final_img_str = pyodide.runPython(`
           image_buf = BytesIO()
