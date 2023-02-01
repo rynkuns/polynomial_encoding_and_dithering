@@ -89,9 +89,9 @@
             <div class="image-label">with dithering</div>
             <img id="final_image" src="empty.png"/>
           </div>
-          <div style="text-align: center; padding: 6px;">
+          <!-- <div style="text-align: center; padding: 6px;">
              Should you encounter technical problems, please try reloading page.
-          </div>
+          </div> -->
         </div>
 
       </div>
@@ -116,14 +116,10 @@
 
 
   <footer class="footer">
-    <div class="container">
-        <div class="" style="text-align: center;">
-          <div class="">
-            <a href="https://rynkuns.github.io"><span class="homepage">Szymon_Rynkun</span></a>
-            <span class="bi bi-slash"></span>
-            <a href="https://github.com/rynkuns/polynomial_encoding_and_dithering"><span class="bi bi-github"></span></a>
-          </div>
-        </div>
+    <div class="" style="text-align: center;">
+      <a href="https://rynkuns.github.io"><span class="homepage">Szymon_Rynkun</span></a>
+      <span class="bi bi-slash"></span>
+      <a href="https://github.com/rynkuns/polynomial_encoding_and_dithering"><span class="bi bi-github"></span></a>
     </div>
 </footer>
 
@@ -151,6 +147,7 @@
 
       function addToOutput(s) {
         output.value += s + "\n";
+        output.scrollTop = output.scrollHeight;
       }
 
 
@@ -171,6 +168,7 @@
 
           from io import BytesIO
           import base64
+          from copy import deepcopy
         `)
         addToOutput("All complete. Ready!")
         return pyodide;
@@ -205,20 +203,10 @@
             from js import max_side_value
             max_side_value = int(max_side_value)
 
-            #image_dims = obraz.size
-            #bigger_image_side = max(image_dims)
-            #if bigger_image_side > max_side_value:
-            #    bigger_index = image_dims.index(bigger_image_side)
-            #    scale = max_side_value / bigger_image_side
-            #    new_dims = [1,1]
-            #    new_dims[bigger_index] = max_side_value
-            #    new_dims[bigger_index-1] = int(image_dims[bigger_index-1] * scale)
-            #    new_dims = tuple(new_dims)
-            #    obraz.resize(new_dims)
-            #obraz.size
-
             max_size = (max_side_value, max_side_value)
             obraz.thumbnail(max_size)
+            obraz_before = deepcopy(obraz)
+
             obraz.size
 
           `) 
@@ -256,6 +244,7 @@
 
           l_klast = int(n_clusters_value)
           cluster_n_init = int(n_init_value)
+          obraz = deepcopy(obraz_before)
 
           pixele = []
           for y in range(obraz.size[1]):
@@ -267,8 +256,6 @@
           kolor = klastry.cluster_centers_.astype(int) #wybrane przezalgorytm kolory
           
 
-
-          from copy import deepcopy
 
           obraz_mid = deepcopy(obraz)
           mapa_mid = obraz_mid.load()
