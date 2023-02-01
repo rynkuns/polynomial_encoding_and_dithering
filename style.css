@@ -222,7 +222,7 @@ button:hover:after {
     height: var(--footer-height);
     line-height: var(--footer-height); /* Vertical center */
 
-    background: rgba(34, 23, 30, 0.88);
+    background: rgba(39, 28, 36, 0.9);
 
     font-size: 2em;
     color: lightgray;

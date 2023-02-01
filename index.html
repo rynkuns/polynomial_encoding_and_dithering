@@ -43,14 +43,14 @@
           </div>
           <div>
             <div class="parameters">
-              <label for="range-max-side">Maximum image side lenght</label><br>
+              <label for="range-max-side">Maximum image size</label><br>
               <i class="bi bi-exclamation-triangle"></i> <span style="font-size: 75%;">
                 Bigger image size may result in long processing time. Please be patient in case the page freezes.
               </span><br>
-              <span id="valueMaxSide" class="slider-value">300</span>
-              <input type="range" min="100" max="800" value="300" id="range-max-side" step="25" class="slider" oninput="valueMaxSide.innerText = this.value"><br>  
+              <span id="valueMaxSide" class="slider-value">300 x 300</span>
+              <input type="range" min="100" max="800" value="300" id="range-max-side" step="25" class="slider" oninput="valueMaxSide.innerText = this.value+' x '+this.value"><br>  
             </div>
-            <div class="parameters">
+            <div class="parameters text-break" style="overflow: hidden;">
               <label for="file">Image selection</label>
               <input type="file" onchange="readImageFile(this);" id="file">
             </div>
