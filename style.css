@@ -8,6 +8,8 @@ body {
     background-color: rgb(27, 25, 27);
     color: gray;
     margin-bottom: var(--footer-height);
+
+    font-size: 0.98em;
 }
 
 a {

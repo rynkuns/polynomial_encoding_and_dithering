@@ -11,6 +11,7 @@
     <title>Floyd–Steinberg dithering online</title>
 
     <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+    <script src="intense.js"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
@@ -33,33 +34,38 @@
             <p>Dithering is a process of minimizing quantization error,
               eg. a difference between pixels values from original range (top image) and their values from a limited range (middle image),
               by using calculated noise. Thanks to this process, when using only limited amout of values it is possible to retain details and large-scale patterns.
-              Although the middle and bottom images will use the same amout of distinc colours, their percieved fidelity is much different.
+              Although the middle and bottom images use the same amout of distinc colours, their percieved fidelity is much different.
+              <br>
+              On this page You can upload your image and get it resized to a computationally reasonable size,
+              have its colourspace reduced (by using <a href="https://en.wikipedia.org/wiki/K-means_clustering">clustering</a>) to a selected number of colours
+              and then dithered using <a href="https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering">Floyd–Steinbergn algorithm</a>.
             </p>
           </div>
           <div>
             <div class="parameters">
-              <input type="file" onchange="readImageFile(this);" id="file">
-            </div>
-            <div class="parameters">
-              <label for="range-max-side">Maximum resized image side lenght</label><br>
-              <span id="valueMaxSide" class="slider-value">300</span>
-              <input type="range" min="100" max="1000" value="300" id="range-max-side" step="25" class="slider" oninput="valueMaxSide.innerText = this.value"><br>  
+              <label for="range-max-side">Maximum image side lenght</label><br>
               <i class="bi bi-exclamation-triangle"></i> <span style="font-size: 75%;">
                 Bigger image size may result in long processing time. Please be patient in case the page freezes.
-              </span>
+              </span><br>
+              <span id="valueMaxSide" class="slider-value">300</span>
+              <input type="range" min="100" max="800" value="300" id="range-max-side" step="25" class="slider" oninput="valueMaxSide.innerText = this.value"><br>  
+            </div>
+            <div class="parameters">
+              <label for="file">Image selection</label>
+              <input type="file" onchange="readImageFile(this);" id="file">
             </div>
             <div class="parameters">
               <label for="range-n-clusters">No. of colours to split image into</label><br>
               <span id="valueNClusters" class="slider-value">5</span>
-              <input type="range" min="2" max="20" value="5" id="range-n-clusters" step="1" class="slider" oninput="valueNClusters.innerText = this.value">
+              <input type="range" min="2" max="15" value="5" id="range-n-clusters" step="1" class="slider" oninput="valueNClusters.innerText = this.value">
             </div>
             <div class="parameters">
-              <label for="range-n-init">No. of times the image will be clustered<br>
+              <label for="range-n-init">No. of times clustering will be initiated<br>
                 <i class="bi bi-exclamation-triangle"></i> <span style="font-size: 75%;">
                   Higher values may bring better results but with increase of processing time.
                 </span></label><br>
               <span id="valueNInit" class="slider-value">1</span>
-              <input type="range" min="1" max="7" value="1" id="range-n-init" step="1" class="slider" oninput="valueNInit.innerText = this.value">
+              <input type="range" min="1" max="5" value="1" id="range-n-init" step="1" class="slider" oninput="valueNInit.innerText = this.value">
             </div>
             <div class="parameters">
               <button onclick="startDithering()">start</button>
@@ -73,7 +79,7 @@
         <div class="col-md">
           <div id="image-one" class="image-container">
             <div class="image-label">the original image</div>
-            <img id="uploaded_image" src="empty.png"/>
+            <img id="uploaded_image" src="empty.png" class="testest"/>
           </div>
           <div id="image-two" class="image-container">
             <div class="image-label">without dithering</div>
@@ -116,6 +122,17 @@
 
     <!-- SCRIPTS -->
 
+    
+		<script>
+      window.onload = function() {
+          var elements = document.querySelectorAll( 'img' );
+        Intense( elements );
+      }
+		</script>
+
+
+
+
     <script>
       const output = document.getElementById("output");
 
@@ -124,7 +141,6 @@
       function addToOutput(s) {
         output.value += s + "\n";
       }
-
 
 
 
