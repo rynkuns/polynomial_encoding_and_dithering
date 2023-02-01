@@ -169,9 +169,9 @@ button:hover:after {
     right: 0px;
 }
 
-input[type="file"] {
+/* input[type="file"] {
     
-}
+} */
 
 .image-container {
     border-style: solid;
@@ -219,7 +219,7 @@ input[type="file"] {
     height: var(--footer-height);
     line-height: var(--footer-height); /* Vertical center */
 
-    background: rgb(6,0,22);
+    background: rgba(6, 0, 22, 0.726);
     /* background: linear-gradient(0deg, rgba(6,0,22,1) 10%, rgba(57, 61, 60, 0.61) 50%, rgba(255,255,255,0) 100%); https://cssgradient.io/ */
 
     font-size: 2em;

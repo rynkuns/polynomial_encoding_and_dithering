@@ -42,8 +42,8 @@
             </div>
             <div class="parameters">
               <label for="range-max-side">Maximum resized image side lenght</label><br>
-              <span id="valueMaxSide" class="slider-value">400</span>
-              <input type="range" min="100" max="1000" value="400" id="range-max-side" step="25" class="slider" oninput="valueMaxSide.innerText = this.value"><br>  
+              <span id="valueMaxSide" class="slider-value">300</span>
+              <input type="range" min="100" max="1000" value="300" id="range-max-side" step="25" class="slider" oninput="valueMaxSide.innerText = this.value"><br>  
               <i class="bi bi-exclamation-triangle"></i> <span style="font-size: 75%;">
                 Bigger image size may result in long processing time. Please be patient in case the page freezes.
               </span>
@@ -169,10 +169,34 @@
             from js import image_file
             obraz = Image.open(BytesIO(bytes(ord(c) for c in image_file))).convert("RGB") ### key moment here
             obraz.size
-            #.resize((400,300))
-          `)  
-          
+          `) 
           addToOutput("Image " + image_dims + " loaded.");
+
+
+          max_side_value = document.getElementById("range-max-side").value
+          let resized_image_dims = pyodide.runPython(`
+            from js import max_side_value
+            max_side_value = int(max_side_value)
+
+            #image_dims = obraz.size
+            #bigger_image_side = max(image_dims)
+            #if bigger_image_side > max_side_value:
+            #    bigger_index = image_dims.index(bigger_image_side)
+            #    scale = max_side_value / bigger_image_side
+            #    new_dims = [1,1]
+            #    new_dims[bigger_index] = max_side_value
+            #    new_dims[bigger_index-1] = int(image_dims[bigger_index-1] * scale)
+            #    new_dims = tuple(new_dims)
+            #    obraz.resize(new_dims)
+            #obraz.size
+
+            max_size = (max_side_value, max_side_value)
+            obraz.thumbnail(max_size)
+            obraz.size
+
+          `) 
+          addToOutput("Image resized to " + resized_image_dims)
+          // addToOutput(pyodide.globals)
 
           uploaded_img_str = pyodide.runPython(`
             image_buf = BytesIO()
