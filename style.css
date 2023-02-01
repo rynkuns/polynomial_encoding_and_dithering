@@ -229,7 +229,7 @@ button:hover:after {
 }
 
 .footer .container {
-    width: 600px;
+    width: auto;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Unica+One&display=swap');
