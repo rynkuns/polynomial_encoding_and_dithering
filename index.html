@@ -1,47 +1,3 @@
-<!-- 
-<!DOCTYPE html>
-<html>
-<head>
-
-    <script type="text/javascript">window.languagePluginUrl = 'https://pyodide-cdn2.iodide.io/v0.15.0/full/';</script>
-    <script src="https://pyodide-cdn2.iodide.io/v0.15.0/full/pyodide.js"></script>
-
-</head>
-<body>
-    <input type="file" onchange="doit();" id="file">
-    <script type="text/javascript">
-    var content = null;
-
-    function doit() {
-        // https://github.com/pyodide/pyodide/issues/679
-        var file = document.getElementById("file").files[0];
-        var reader = new FileReader();
-        reader.readAsBinaryString(file);
-        reader.onload = evt => { 
-            content = evt.target.result; 
-            var output = pyodide.runPython('from js import content\ncontent');
-            var l = output.length;
-            var array = new Uint8Array(l);
-            for (var i = 0; i < l; i++) {
-                array[i] = output.charCodeAt(i);
-            }
-            var blob = new Blob([array], {type: 'application/octet-stream'});
-            var elem = window.document.createElement('a');
-            elem.href = window.URL.createObjectURL(blob);
-            elem.download = 'output.pdf';
-            document.body.appendChild(elem);
-            elem.click();        
-            document.body.removeChild(elem);
-        }
-    }
-
-    languagePluginLoader.then(function () {
-        console.log('Ready');
-    });
-    </script>
-</body>
- -->
-
 
 
 
@@ -82,9 +38,14 @@
           </div>
           <div>
             <div class="parameters">
-              <input type="file" onchange="readImageFile(this);" id="file"><br>
+              <input type="file" onchange="readImageFile(this);" id="file">
+            </div>
+            <div class="parameters">
+              <label for="range-max-side">Maximum resized image side lenght</label><br>
+              <span id="valueMaxSide" class="slider-value">400</span>
+              <input type="range" min="100" max="1000" value="400" id="range-max-side" step="25" class="slider" oninput="valueMaxSide.innerText = this.value"><br>  
               <i class="bi bi-exclamation-triangle"></i> <span style="font-size: 75%;">
-                Bigger images may result in long processing time. Please be patient in case the page freezes.
+                Bigger image size may result in long processing time. Please be patient in case the page freezes.
               </span>
             </div>
             <div class="parameters">
@@ -138,14 +99,10 @@
 
 
 
-
-
-
     <footer class="footer">
       <div class="container">
           <div class="row">
-            <div class="col"><a href="#projects-container"><span class="bi bi-journal-code"></span></a></div> 
-            <div class="col"><a href="#"><span class="bi bi-journal-text"></span></a></div> 
+            <div class="col"><a href="https://rynkuns.github.io"><span class="homepage">Szymon_Rynkun</span></a></div> 
             <div class="col"><span class="bi bi-slash"></span></div> 
             <div class="col"><a href="mailto:szymon.rynkun+homepage@gmail.com"><span class="bi bi-envelope"></span></a></div>
             <div class="col"><a href="https://www.linkedin.com/in/szymon-rynkun/"><span class="bi bi-linkedin"></span></a></div>
@@ -212,6 +169,7 @@
             from js import image_file
             obraz = Image.open(BytesIO(bytes(ord(c) for c in image_file))).convert("RGB") ### key moment here
             obraz.size
+            #.resize((400,300))
           `)  
           
           addToOutput("Image " + image_dims + " loaded.");
