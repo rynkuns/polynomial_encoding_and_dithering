@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Unica+One&display=swap');
+
 :root {
     --footer-height: 80px;
 }
@@ -51,7 +53,7 @@ a:hover {
     20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
-    80% { color: rgb(77, 88, 88); }
+    90% { color: rgb(32, 51, 51); }
     100% { color: rgb(48, 52, 53); }
 }
 @-moz-keyframes console-color-anim {
@@ -59,7 +61,7 @@ a:hover {
     20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
-    80% { color: rgb(77, 88, 88); }
+    90% { color: rgb(32, 51, 51); }
     100% { color: rgb(48, 52, 53); }
 }
 @-ms-keyframes console-color-anim {
@@ -67,7 +69,7 @@ a:hover {
     20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
-    80% { color: rgb(77, 88, 88); }
+    90% { color: rgb(32, 51, 51); }
     100% { color: rgb(48, 52, 53); }
 }
 @-o-keyframes console-color-anim {
@@ -75,7 +77,7 @@ a:hover {
     20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
-    80% { color: rgb(77, 88, 88); }
+    90% { color: rgb(32, 51, 51); }
     100% { color: rgb(48, 52, 53); }
 }
 @keyframes console-color-anim {
@@ -83,7 +85,7 @@ a:hover {
     20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
-    80% { color: rgb(77, 88, 88); }
+    90% { color: rgb(32, 51, 51); }
     100% { color: rgb(48, 52, 53); }
 }
 
@@ -238,8 +240,6 @@ button:hover:after {
 .footer .container {
     width: auto;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Unica+One&display=swap');
 
 .homepage {
     font-family: 'Unica One', cursive;
