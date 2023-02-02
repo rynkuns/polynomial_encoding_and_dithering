@@ -39,41 +39,51 @@ a:hover {
     background-color: transparent;
     border-style: none;
 
-    -webkit-animation: console-color-anim 4s infinite;
-    -moz-animation: console-color-anim 4s infinite;
-    -o-animation: console-color-anim 4s infinite;
-    -ms-animation: console-color-anim 4s infinite;
-    animation: console-color-anim 4s infinite;
+    -webkit-animation: console-color-anim 5s infinite;
+    -moz-animation: console-color-anim 5s infinite;
+    -o-animation: console-color-anim 5s infinite;
+    -ms-animation: console-color-anim 5s infinite;
+    animation: console-color-anim 5s infinite;
 }
 
 @-webkit-keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
+    20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
+    80% { color: rgb(77, 88, 88); }
     100% { color: rgb(48, 52, 53); }
 }
 @-moz-keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
+    20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
+    80% { color: rgb(77, 88, 88); }
     100% { color: rgb(48, 52, 53); }
 }
 @-ms-keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
+    20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
+    80% { color: rgb(77, 88, 88); }
     100% { color: rgb(48, 52, 53); }
 }
 @-o-keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
+    20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
+    80% { color: rgb(77, 88, 88); }
     100% { color: rgb(48, 52, 53); }
 }
 @keyframes console-color-anim {
     0% { color: rgb(51, 54, 53); }
+    20% { color: rgb(82, 85, 84); }
     50% { color: rgb(39, 38, 36); }
     80% { color: rgb(69, 71, 71); }
+    80% { color: rgb(77, 88, 88); }
     100% { color: rgb(48, 52, 53); }
 }
 

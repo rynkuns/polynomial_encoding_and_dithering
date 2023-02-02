@@ -236,7 +236,7 @@
       async function startDithering() {
         let pyodide = await pyodideReadyPromise;
 
-        addToOutput("Clustering in progress...");
+        // addToOutput("Clustering in progress...");
 
         n_init_value = document.getElementById("range-n-init").value
         n_clusters_value = document.getElementById("range-n-clusters").value
@@ -272,7 +272,7 @@
                   
         `)
         
-        addToOutput("Clustering complete.");
+        addToOutput("Clustering to "+ n_clusters_value +" colours complete.");
         // https://stackoverflow.com/questions/56583696/how-to-redirect-render-pyodide-output-in-browser
         mid_img_str = pyodide.runPython(`
           mid_image_buf = BytesIO()
@@ -285,7 +285,7 @@
 
 
 
-      addToOutput("Dithering in progress...");
+      // addToOutput("Dithering in progress...");
       pyodide.runPython(`
 
           def korektor(pierwotny, korekta, waga):
@@ -325,39 +325,6 @@
         document.getElementById("final_image").src=final_img_str
       }
 
-
-
-
-
-
-
-
-
-/*       var content = null;
-
-      async function doit() {
-        let pyodide = await pyodideReadyPromise;
-        // https://github.com/pyodide/pyodide/issues/679
-        var file = document.getElementById("file").files[0];
-        var reader = new FileReader();
-        reader.readAsBinaryString(file);
-        reader.onload = evt => { 
-            content = evt.target.result; 
-            var output = pyodide.runPython('from js import content\ncontent');
-            var l = output.length;
-            var array = new Uint8Array(l);
-            for (var i = 0; i < l; i++) {
-                array[i] = output.charCodeAt(i);
-            }
-            var blob = new Blob([array], {type: 'application/octet-stream'});
-            var elem = window.document.createElement('a');
-            elem.href = window.URL.createObjectURL(blob);
-            elem.download = 'output.pdf';
-            document.body.appendChild(elem);
-            elem.click();        
-            document.body.removeChild(elem);
-        }
-    } */
 
 
     </script>
